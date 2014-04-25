@@ -31,57 +31,74 @@
 
 /**
  * \file
- *      Erbium (Er) example project configuration.
+ *      Example resource
  * \author
  *      Matthias Kovatsch <kovatsch@inf.ethz.ch>
  */
 
-#ifndef __PROJECT_ERBIUM_CONF_H__
-#define __PROJECT_ERBIUM_CONF_H__
+#include "contiki.h"
 
-/* Custom channel and PAN ID configuration for your project. */
-#undef IEEE802154_CONF_PANID
-#define IEEE802154_CONF_PANID          0xABCD
+#if PLATFORM_HAS_LEDS
 
-/* IP buffer size must match all other hops, in particular the border router. */
-/*
-#undef UIP_CONF_BUFFER_SIZE
-#define UIP_CONF_BUFFER_SIZE           256
-*/
+#include <string.h>
+#include "rest-engine.h"
+#include "dev/leds.h"
 
-/* Disabling RDC for demo purposes. Core updates often require more memory. */
-/* For projects, optimize memory and enable RDC again. */
-#undef NETSTACK_CONF_RDC
-#define NETSTACK_CONF_RDC              nullrdc_driver
+#define DEBUG   DEBUG_NONE
+#include "net/ip/uip-debug.h"
 
-/* Disabling TCP on CoAP nodes. */
-#undef UIP_CONF_TCP
-#define UIP_CONF_TCP                   0
+static void res_post_put_handler(void* request, void* response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset);
 
-/* Increase rpl-border-router IP-buffer when using more than 64. */
-#undef REST_MAX_CHUNK_SIZE
-#define REST_MAX_CHUNK_SIZE            64
+/*A simple actuator example, depending on the color query parameter and post variable mode, corresponding led is activated or deactivated*/
+RESOURCE(res_leds,
+    "title=\"LEDs: ?color=r|g|b, POST/PUT mode=on|off\";rt=\"Control\"",
+    NULL,
+    res_post_put_handler,
+    res_post_put_handler,
+    NULL);
 
-/* Estimate your header size, especially when using Proxy-Uri. */
-/*
-#undef COAP_MAX_HEADER_SIZE
-#define COAP_MAX_HEADER_SIZE           70
-*/
+static void
+res_post_put_handler(void* request, void* response, uint8_t *buffer, uint16_t preferred_size, int32_t *offset)
+{
+  size_t len = 0;
+  const char *color = NULL;
+  const char *mode = NULL;
+  uint8_t led = 0;
+  int success = 1;
 
-/* Multiplies with chunk size, be aware of memory constraints. */
-#undef COAP_MAX_OPEN_TRANSACTIONS
-#define COAP_MAX_OPEN_TRANSACTIONS     4
+  if((len=REST.get_query_variable(request, "color", &color))) {
+    PRINTF("color %.*s\n", len, color);
 
-/* Must be <= open transactions, default is COAP_MAX_OPEN_TRANSACTIONS-1. */
-/*
-#undef COAP_MAX_OBSERVERS
-#define COAP_MAX_OBSERVERS             2
-*/
+    if(strncmp(color, "r", len)==0) {
+      led = LEDS_RED;
+    } else if(strncmp(color,"g", len)==0) {
+      led = LEDS_GREEN;
+    } else if(strncmp(color,"b", len)==0) {
+      led = LEDS_BLUE;
+    } else {
+      success = 0;
+    }
+  } else {
+    success = 0;
+  }
 
-/* Filtering .well-known/core per query can be disabled to save space. */
-#undef COAP_LINK_FORMAT_FILTERING
-#define COAP_LINK_FORMAT_FILTERING     0
-#undef COAP_PROXY_OPTION_PROCESSING
-#define COAP_PROXY_OPTION_PROCESSING   0
+  if(success && (len=REST.get_post_variable(request, "mode", &mode))) {
+    PRINTF("mode %s\n", mode);
 
-#endif /* __PROJECT_ERBIUM_CONF_H__ */
+    if(strncmp(mode, "on", len)==0) {
+      leds_on(led);
+    } else if(strncmp(mode, "off", len)==0) {
+      leds_off(led);
+    } else {
+      success = 0;
+    }
+  } else {
+    success = 0;
+  }
+
+  if(!success) {
+    REST.set_response_status(response, REST.status.BAD_REQUEST);
+  }
+}
+
+#endif /* PLATFORM_HAS_LEDS */
