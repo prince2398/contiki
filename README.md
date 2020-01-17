@@ -17,3 +17,7 @@ and so on.
 For more information, see the Contiki website:
 
 [http://contiki-os.org](http://contiki-os.org)
+
+This is a Forked Repository [prince2398/contiki](https://github.com/prince2398/contiki) from [contiki-os/contiki](https://github.com/contiki-os/contiki) 
+
+This is working with both InstantContiki and Local Repo
