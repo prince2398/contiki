@@ -100,6 +100,7 @@ coap_send_transaction(coap_transaction_t *t)
       PRINTF("Keeping transaction %u\n", t->mid);
 
       if(t->retrans_counter == 0) {
+        t->timestamp = clock_time();
         t->retrans_timer.timer.interval =
           COAP_RESPONSE_TIMEOUT_TICKS + (random_rand()
                                          %
@@ -149,6 +150,16 @@ coap_clear_transaction(coap_transaction_t *t)
 {
   if(t) {
     PRINTF("Freeing transaction %u: %p\n", t->mid, t);
+
+    if(t->retrans_counter <= COAP_MAX_RETRANSMIT){
+		//August: Check if this was a CONFIRMABLE that actually provides RTT measurements
+      if(COAP_TYPE_CON==((COAP_HEADER_TYPE_MASK & t->packet[0])>>COAP_HEADER_TYPE_POSITION)){
+        //AUGUST: before clearing transaction store RTT info
+        clock_time_t rtt = clock_time() - t->timestamp;
+        printf("RTT - %lu\n", rtt);
+        // coap_update_rtt_estimation(&t->addr, rtt, t->retrans_counter);
+      }
+	  }
 
     etimer_stop(&t->retrans_timer);
     list_remove(transactions_list, t);
