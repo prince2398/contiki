@@ -62,6 +62,13 @@ coap_register_as_transaction_handler()
 coap_transaction_t *
 coap_new_transaction(uint16_t mid, uip_ipaddr_t * addr, uint16_t port)
 {
+  #ifdef COCOA
+    //AUGUST
+    if(countTransactionsForAddress(addr, transactions_list) >= NSTART){
+      PRINTF("NSTART limit reached!\n");
+      return NULL;
+    }
+  #endif
   coap_transaction_t *t = memb_alloc(&transactions_memb);
 
   if(t) {
@@ -92,17 +99,32 @@ coap_send_transaction(coap_transaction_t * t)
       PRINTF("Keeping transaction %u\n", t->mid);
 
       if(t->retrans_counter == 0) {
-        t->retrans_timer.timer.interval =
-          COAP_RESPONSE_TIMEOUT_TICKS + (random_rand()
-                                         %
-                                         (clock_time_t)
-                                         COAP_RESPONSE_TIMEOUT_BACKOFF_MASK);
+        //August
+        #ifdef COCOA
+          clock_time_t storedRto = coap_check_rtt_estimation(&t->addr, transactions_list);
+          t->retrans_timer.timer.interval = storedRto+ random_rand()% (storedRto >> 1);
+          t->start_rto = storedRto;
+          t->timestamp = clock_time();
+        #else
+          t->retrans_timer.timer.interval =
+            COAP_RESPONSE_TIMEOUT_TICKS + (random_rand()
+                                          %
+                                          (clock_time_t)
+                                          COAP_RESPONSE_TIMEOUT_BACKOFF_MASK);
+	      #endif
         PRINTF("Initial interval %f\n",
                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
       } else {
-        t->retrans_timer.timer.interval <<= 1;  /* double */
-        PRINTF("Doubled (%u) interval %f\n", t->retrans_counter,
-               (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+        #ifdef COCOA
+          t->retrans_timer.timer.interval = coap_check_rto_state(t->retrans_timer.timer.interval, t->start_rto);
+          //t->retrans_timer.timer.interval = (t->retrans_timer.timer.interval > MAXRTO_VALUE) ? MAXRTO_VALUE : t->retrans_timer.timer.interval;
+          PRINTF("Increased (%u) interval %f\n", t->retrans_counter,
+                                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+        #else
+          t->retrans_timer.timer.interval <<= 1;  /* double */
+          PRINTF("Doubled (%u) interval %f\n", t->retrans_counter,
+                        (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+	    	#endif
       }
 
       /*FIXME
@@ -118,7 +140,7 @@ coap_send_transaction(coap_transaction_t * t)
       t = NULL;
     } else {
       /* timed out */
-      PRINTF("Timeout\n");
+      printf("Timeout\n");
       restful_response_handler callback = t->callback;
       void *callback_data = t->callback_data;
 
@@ -141,7 +163,18 @@ coap_clear_transaction(coap_transaction_t * t)
 {
   if(t) {
     PRINTF("Freeing transaction %u: %p\n", t->mid, t);
-
+    #ifdef COCOA
+      if(t->retrans_counter <= COAP_MAX_RETRANSMIT){
+        //August: Check if this was a CONFIRMABLE that actually provides RTT measurements
+        if(COAP_TYPE_CON==((COAP_HEADER_TYPE_MASK & t->packet[0])>>COAP_HEADER_TYPE_POSITION)){
+          //AUGUST: before clearing transaction store RTT info
+          clock_time_t rtt = clock_time() - t->timestamp;
+          printf("RTT - %lu \n", rtt, CLOCK_SECOND);
+          printf("Retransmissions - %u\n",t->retrans_counter);
+          coap_update_rtt_estimation(&t->addr, rtt, t->retrans_counter);
+        }
+      }
+    #endif
     etimer_stop(&t->retrans_timer);
     list_remove(transactions_list, t);
     memb_free(&transactions_memb, t);
@@ -170,7 +203,7 @@ coap_check_transactions()
   for(t = (coap_transaction_t *) list_head(transactions_list); t; t = t->next) {
     if(etimer_expired(&t->retrans_timer)) {
       ++(t->retrans_counter);
-      PRINTF("Retransmitting %u (%u)\n", t->mid, t->retrans_counter);
+      printf("Retransmitting %u (%u)\n", t->mid, t->retrans_counter);
       coap_send_transaction(t);
     }
   }

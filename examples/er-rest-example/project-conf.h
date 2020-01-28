@@ -44,10 +44,10 @@
 #define IEEE802154_CONF_PANID          0xABCD
 
 /* IP buffer size must match all other hops, in particular the border router. */
-/*
+
 #undef UIP_CONF_BUFFER_SIZE
 #define UIP_CONF_BUFFER_SIZE           256
-*/
+
 
 /* Disabling RDC for demo purposes. Core updates often require more memory. */
 /* For projects, optimize memory and enable RDC again. */
@@ -85,3 +85,6 @@
 #define COAP_PROXY_OPTION_PROCESSING   0
 
 #endif /* __PROJECT_ERBIUM_CONF_H__ */
+
+/* CoCoA Enable */
+#define COCOA 1

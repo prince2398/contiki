@@ -13,6 +13,12 @@ CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
 CFLAGS += -DRF_CHANNEL=26
 
+CFLAGS += -DCOCOA=1
+
+# Linking Mathematical Library
+TARGET_LIBFILES += -lm
+
+
 # automatically build RESTful resources
 REST_RESOURCES_DIR = ./resources
 REST_RESOURCES_FILES = $(notdir $(shell find $(REST_RESOURCES_DIR) -name '*.c'))
