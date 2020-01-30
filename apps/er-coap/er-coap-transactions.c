@@ -114,6 +114,7 @@ coap_send_transaction(coap_transaction_t * t)
 	      #endif
         PRINTF("Initial interval %f\n",
                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+        printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
       } else {
         #ifdef COCOA
           t->retrans_timer.timer.interval = coap_check_rto_state(t->retrans_timer.timer.interval, t->start_rto);
@@ -125,6 +126,7 @@ coap_send_transaction(coap_transaction_t * t)
           PRINTF("Doubled (%u) interval %f\n", t->retrans_counter,
                         (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
 	    	#endif
+         printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
       }
 
       /*FIXME

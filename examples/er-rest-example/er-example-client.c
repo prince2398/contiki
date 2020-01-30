@@ -103,6 +103,8 @@ PROCESS_THREAD(er_example_client, ev, data)
   printf("Press a button to request %s\n", service_urls[uri_switch]);
 #endif
 
+  printf("CLOCK_SECOND - %lu\n", CLOCK_SECOND);
+
   while(1) {
     PROCESS_YIELD();
 
