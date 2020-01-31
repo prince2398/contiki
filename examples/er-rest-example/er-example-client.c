@@ -49,7 +49,7 @@
 
 
 /* FIXME: This server address is hard-coded for Cooja and link-local for unconnected border router. */
-#define SERVER_NODE(ipaddr)   uip_ip6addr(ipaddr, 0xfe80, 0, 0, 0, 0x0212, 0x7402, 0x0002, 0x0202)      /* cooja2 */
+#define SERVER_NODE(ipaddr)   uip_ip6addr(ipaddr, 0xfe80, 0, 0, 0, 0xc30c, 0, 0, 0x0002)      /* cooja2 */
 //#define SERVER_NODE(ipaddr)   uip_ip6addr(ipaddr, 0xbbbb, 0, 0, 0, 0, 0, 0, 0x1)
 
 #define LOCAL_PORT      UIP_HTONS(COAP_DEFAULT_PORT+1)
@@ -102,6 +102,8 @@ PROCESS_THREAD(er_example_client, ev, data)
   SENSORS_ACTIVATE(button_sensor);
   printf("Press a button to request %s\n", service_urls[uri_switch]);
 #endif
+
+  printf("CLOCK_SECOND - %lu\n", CLOCK_SECOND);
 
   while(1) {
     PROCESS_YIELD();

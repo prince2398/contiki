@@ -47,6 +47,8 @@
 /*---------------------------------------------------------------------------*/
 MEMB(transactions_memb, coap_transaction_t, COAP_MAX_OPEN_TRANSACTIONS);
 LIST(transactions_list);
+int failed = 0;
+int success = 0;
 
 static struct process *transaction_handler_process = NULL;
 
@@ -86,7 +88,7 @@ coap_send_transaction(coap_transaction_t * t)
   coap_send_message(&t->addr, t->port, t->packet, t->packet_len);
 
   if(COAP_TYPE_CON ==
-     ((COAP_HEADER_TYPE_MASK & t->packet[0]) >> COAP_HEADER_TYPE_POSITION)) {
+      ((COAP_HEADER_TYPE_MASK & t->packet[0]) >> COAP_HEADER_TYPE_POSITION)) {
     if(t->retrans_counter < COAP_MAX_RETRANSMIT) {
       /* not timed out yet */
       PRINTF("Keeping transaction %u\n", t->mid);
@@ -94,17 +96,19 @@ coap_send_transaction(coap_transaction_t * t)
       if(t->retrans_counter == 0) {
         t->retrans_timer.timer.interval =
           COAP_RESPONSE_TIMEOUT_TICKS + (random_rand()
-                                         %
-                                         (clock_time_t)
-                                         COAP_RESPONSE_TIMEOUT_BACKOFF_MASK);
+                                          %
+                                          (clock_time_t)
+                                          COAP_RESPONSE_TIMEOUT_BACKOFF_MASK);
+        t->timestamp = clock_time();
         PRINTF("Initial interval %f\n",
-               (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
       } else {
         t->retrans_timer.timer.interval <<= 1;  /* double */
         PRINTF("Doubled (%u) interval %f\n", t->retrans_counter,
-               (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
+                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
       }
 
+      printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
       /*FIXME
        * Hack: Setting timer for responsible process.
        * Maybe there is a better way, but avoid posting everything to the process.
@@ -118,7 +122,7 @@ coap_send_transaction(coap_transaction_t * t)
       t = NULL;
     } else {
       /* timed out */
-      PRINTF("Timeout\n");
+      printf("Timeout\n");
       restful_response_handler callback = t->callback;
       void *callback_data = t->callback_data;
 
@@ -141,6 +145,16 @@ coap_clear_transaction(coap_transaction_t * t)
 {
   if(t) {
     PRINTF("Freeing transaction %u: %p\n", t->mid, t);
+
+    if(t->retrans_counter <= COAP_MAX_RETRANSMIT){
+      //August: Check if this was a CONFIRMABLE that actually provides RTT measurements
+      if(COAP_TYPE_CON==((COAP_HEADER_TYPE_MASK & t->packet[0])>>COAP_HEADER_TYPE_POSITION)){
+        //AUGUST: before clearing transaction store RTT info
+        clock_time_t rtt = clock_time() - t->timestamp;
+        printf("RTT - %lu \n", rtt);
+        printf("Retransmissions - %u\n",t->retrans_counter);
+      }
+    }
 
     etimer_stop(&t->retrans_timer);
     list_remove(transactions_list, t);
@@ -170,9 +184,17 @@ coap_check_transactions()
   for(t = (coap_transaction_t *) list_head(transactions_list); t; t = t->next) {
     if(etimer_expired(&t->retrans_timer)) {
       ++(t->retrans_counter);
+
+      if(t->retrans_counter >= COAP_MAX_RETRANSMIT){
+        failed = failed + 1;
+      }
       PRINTF("Retransmitting %u (%u)\n", t->mid, t->retrans_counter);
       coap_send_transaction(t);
+    }else{
+      success=success+1;
     }
+
+    printf("Throughput - %ld\n",(unsigned long)((success*100)/(success + failed)*100));
   }
 }
 /*---------------------------------------------------------------------------*/
