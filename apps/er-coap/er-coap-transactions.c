@@ -47,6 +47,8 @@
 /*---------------------------------------------------------------------------*/
 MEMB(transactions_memb, coap_transaction_t, COAP_MAX_OPEN_TRANSACTIONS);
 LIST(transactions_list);
+int failed = 0;
+int success = 0;
 
 static struct process *transaction_handler_process = NULL;
 
@@ -62,7 +64,7 @@ coap_register_as_transaction_handler()
 coap_transaction_t *
 coap_new_transaction(uint16_t mid, uip_ipaddr_t * addr, uint16_t port)
 {
-  #ifdef COCOA
+  #ifdef COCOAPP
     //AUGUST
     if(countTransactionsForAddress(addr, transactions_list) >= NSTART){
       PRINTF("NSTART limit reached!\n");
@@ -100,7 +102,7 @@ coap_send_transaction(coap_transaction_t * t)
 
       if(t->retrans_counter == 0) {
         //August
-        #ifdef COCOA
+        #ifdef COCOAPP
           clock_time_t storedRto = coap_check_rtt_estimation(&t->addr, transactions_list);
           t->retrans_timer.timer.interval = storedRto+ random_rand()% (storedRto >> 1);
           t->start_rto = storedRto;
@@ -114,10 +116,9 @@ coap_send_transaction(coap_transaction_t * t)
 	      #endif
         PRINTF("Initial interval %f\n",
                (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
-        printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
       } else {
-        #ifdef COCOA
-          t->retrans_timer.timer.interval = coap_check_rto_state(t->retrans_timer.timer.interval, t->start_rto);
+        #ifdef COCOAPP
+          t->retrans_timer.timer.interval = coap_check_rto_state(t->retrans_timer.timer.interval, t->start_rto, &t->addr);
           //t->retrans_timer.timer.interval = (t->retrans_timer.timer.interval > MAXRTO_VALUE) ? MAXRTO_VALUE : t->retrans_timer.timer.interval;
           PRINTF("Increased (%u) interval %f\n", t->retrans_counter,
                                 (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
@@ -126,8 +127,8 @@ coap_send_transaction(coap_transaction_t * t)
           PRINTF("Doubled (%u) interval %f\n", t->retrans_counter,
                         (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
 	    	#endif
-         printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
       }
+      printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
 
       /*FIXME
        * Hack: Setting timer for responsible process.
@@ -165,13 +166,13 @@ coap_clear_transaction(coap_transaction_t * t)
 {
   if(t) {
     PRINTF("Freeing transaction %u: %p\n", t->mid, t);
-    #ifdef COCOA
+    #ifdef COCOAPP
       if(t->retrans_counter <= COAP_MAX_RETRANSMIT){
         //August: Check if this was a CONFIRMABLE that actually provides RTT measurements
         if(COAP_TYPE_CON==((COAP_HEADER_TYPE_MASK & t->packet[0])>>COAP_HEADER_TYPE_POSITION)){
           //AUGUST: before clearing transaction store RTT info
           clock_time_t rtt = clock_time() - t->timestamp;
-          printf("RTT - %lu \n", rtt, CLOCK_SECOND);
+          printf("RTT - %lu \n", rtt);
           printf("Retransmissions - %u\n",t->retrans_counter);
           coap_update_rtt_estimation(&t->addr, rtt, t->retrans_counter);
         }
@@ -205,9 +206,17 @@ coap_check_transactions()
   for(t = (coap_transaction_t *) list_head(transactions_list); t; t = t->next) {
     if(etimer_expired(&t->retrans_timer)) {
       ++(t->retrans_counter);
+
+      if(t->retrans_counter >= COAP_MAX_RETRANSMIT){
+        failed = failed + 1;
+      }
       printf("Retransmitting %u (%u)\n", t->mid, t->retrans_counter);
       coap_send_transaction(t);
+    }else{
+      success=success+1;
     }
+
+    printf("Throughput - %ld\n",(unsigned long)(success/(success + failed)*100));
   }
 }
 /*---------------------------------------------------------------------------*/

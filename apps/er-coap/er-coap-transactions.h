@@ -66,7 +66,7 @@ typedef struct coap_transaction {
   uint8_t packet[COAP_MAX_PACKET_SIZE + 1];     /* +1 for the terminating '\0' which will not be sent
 
                                                  * Use snprintf(buf, len+1, "", ...) to completely fill payload */
-  #ifdef COCOA
+  #ifdef COCOAPP
   //August:
     clock_time_t timestamp;
     clock_time_t previous_rto;
@@ -84,7 +84,7 @@ coap_transaction_t *coap_get_transaction_by_mid(uint16_t mid);
 
 void coap_check_transactions();
 
-#ifdef COCOA
+#ifdef COCOAPP
 //AUGUST:
 /* August: container for maintaining RTT estimations*/
 typedef struct coap_rtt_estimations {
@@ -93,6 +93,17 @@ typedef struct coap_rtt_estimations {
   uip_ipaddr_t addr;
 
   clock_time_t rtt[2];
+
+ //delay gradient variables start
+  clock_time_t rttmin;
+  clock_time_t prev_rttmin;
+  clock_time_t rttmax;
+  clock_time_t prev_rttmax;
+  unsigned long delta_min;
+  unsigned long delta_max;
+  uint8_t rtt_count;
+ //delay gradient variables end
+
   clock_time_t rttvar[2];
   clock_time_t rto[3];
   clock_time_t lastupdated[3];
@@ -105,7 +116,7 @@ typedef struct coap_rtt_estimations {
 #define NSTART 1
 #define COAP_INITIAL_RTO 2 * CLOCK_SECOND
 
-clock_time_t coap_check_rto_state(clock_time_t rto, clock_time_t oldrto);
+clock_time_t coap_check_rto_state(clock_time_t rto, clock_time_t oldrto, uip_ipaddr_t *addr);
 uint8_t countTransactionsForAddress(uip_ipaddr_t *addr,  list_t transactions_list);
 void coap_update_rtt_estimation(uip_ipaddr_t* transactionAddr, clock_time_t rtt, uint8_t retransmissions);
 void coap_delete_rtt_by_freshness();

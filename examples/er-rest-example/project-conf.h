@@ -86,5 +86,5 @@
 
 #endif /* __PROJECT_ERBIUM_CONF_H__ */
 
-/* CoCoA Enable */
-#define COCOA 1
+/* CoCoAPP Enable */
+#define COCOAPP 1

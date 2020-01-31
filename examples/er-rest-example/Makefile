@@ -13,7 +13,7 @@ CFLAGS += -DPROJECT_CONF_H=\"project-conf.h\"
 
 CFLAGS += -DRF_CHANNEL=26
 
-CFLAGS += -DCOCOA=1
+CFLAGS += -DCOCOAPP=1
 
 # Linking Mathematical Library
 TARGET_LIBFILES += -lm
