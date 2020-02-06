@@ -99,8 +99,11 @@ typedef struct coap_rtt_estimations {
   clock_time_t prev_rttmin;
   clock_time_t rttmax;
   clock_time_t prev_rttmax;
+  clock_time_t rtt_median[5];
+  clock_time_t prev_rtt_median;
   unsigned long delta_min;
   unsigned long delta_max;
+  unsigned long delta_med;
   uint8_t rtt_count;
  //delay gradient variables end
 

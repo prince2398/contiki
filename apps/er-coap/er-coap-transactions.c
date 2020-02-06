@@ -128,8 +128,8 @@ coap_send_transaction(coap_transaction_t * t)
                         (float)t->retrans_timer.timer.interval / CLOCK_SECOND);
 	    	#endif
       }
-      printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
-
+        printf("RTO - %lu (%d)\n", t->retrans_timer.timer.interval, t->retrans_counter);
+      
       /*FIXME
        * Hack: Setting timer for responsible process.
        * Maybe there is a better way, but avoid posting everything to the process.

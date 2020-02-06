@@ -110,14 +110,15 @@ clock_time_t coap_check_rto_state(clock_time_t rto, clock_time_t oldrto,uip_ipad
 
 	int avg_delta_min = t->delta_min/((t->rtt_count+1)/5);
 	int avg_delta_max = t->delta_max/((t->rtt_count+1)/5);
+	int avg_delta_med = t->delta_med/((t->rtt_count+1)/5);
 	int ran_no = random_rand()%100;
-	int dlt = avg_delta_min/300;
+	int dlt = avg_delta_med/300;
 	//printf("DELTA MIN = %d\nDELTA MAX = %d\n",(int)avg_delta_min,(int)avg_delta_max);
 	//printf("DLT = AVG_DELTA_MIN/300 = %d\n",dlt);
 	int pbf = ((exponentof[dlt] - 1)*100)/exponentof[dlt];
 	
 	// printf("CoCoAPP: %lu\n",rto);
-	if(avg_delta_min > 0 && pbf>ran_no)
+	if(avg_delta_med > 0 && pbf>ran_no)
 		return (rto*1.42);
 	else
 		return (rto*0.7);
@@ -154,7 +155,29 @@ coap_new_rtt_estimation(clock_time_t rtt, uip_ipaddr_t *addr, uint8_t retransmis
 
   return e;
 }
-
+void swap(clock_time_t *xp, clock_time_t *yp)  {  
+    clock_time_t temp = *xp;  
+    *xp = *yp;  
+    *yp = temp;  
+}  
+  
+void selectionSort(clock_time_t *arr, uint8_t n)  {  
+    uint8_t i, j, min_idx;  
+    // One by one move boundary of unsorted subarray  
+    for ( i = 0; i < n-1; i++)  {  
+        // Find the minimum element in unsorted array  
+        min_idx = i;  
+        for ( j = i+1; j < n; j++)  
+			if (arr[j] < arr[min_idx])  
+				min_idx = j;  
+        // Swap the found minimum element with the first element  
+        swap(&arr[min_idx], &arr[i]);  
+    }  
+}  
+clock_time_t calc_median(clock_time_t arr[]){
+	selectionSort(arr,5);
+	return arr[2];
+}
 void
 coap_update_rtt_estimation(uip_ipaddr_t* transactionAddr, clock_time_t rtt, uint8_t retransmissions){
 	coap_rtt_estimations_t *t = NULL;
@@ -171,16 +194,22 @@ coap_update_rtt_estimation(uip_ipaddr_t* transactionAddr, clock_time_t rtt, uint
 			//Delay Gradient start COCOAPP TEAM
 			
 			if((t->rtt_count+1) % 5 == 0){
+				clock_time_t median = calc_median(t->rtt_median);
+				t->delta_med = t->delta_med + median - t->prev_rtt_median;
 				t->delta_min = t->delta_min + t->rttmin - t->prev_rttmin;
 				t->delta_max = t->delta_max + t->rttmax - t->prev_rttmax;
+				t->prev_rtt_median = median;
 				t->prev_rttmin = t->rttmin;
 				t->prev_rttmax = t->rttmax;
+				uint8_t i;
+				for(i=0;i<5; i++) t->rtt_median[i] = 0;
 				t->rttmin=0;
 				t->rttmax=0;
 				
 				t->rtt_count=t->rtt_count+1;
 				//printf("rtt initial + %lu\n",rtt);
 			}else{
+				t->rtt_median[(t->rtt_count) % 5] = rtt;
 				clock_time_t temp;
 				temp = t->rttmin; 
 				if(rtt < t->rttmin)

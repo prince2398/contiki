@@ -8,7 +8,7 @@
   <project EXPORT="discard">[APPS_DIR]/powertracker</project>
   <simulation>
     <title>My simulation</title>
-    <randomseed>123456</randomseed>
+    <randomseed>generated</randomseed>
     <motedelay_us>1000000</motedelay_us>
     <radiomedium>
       org.contikios.cooja.radiomediums.UDGM
@@ -89,10 +89,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>1</id>
       </interface_config>
@@ -105,10 +101,6 @@
         <x>209.99217881621968</x>
         <y>100.03680525498639</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -125,10 +117,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>4</id>
       </interface_config>
@@ -141,10 +129,6 @@
         <x>185.93709476403342</x>
         <y>91.59719528158219</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -161,10 +145,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>6</id>
       </interface_config>
@@ -177,10 +157,6 @@
         <x>181.07218120936218</x>
         <y>96.55487923342638</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -197,10 +173,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>8</id>
       </interface_config>
@@ -213,10 +185,6 @@
         <x>181.12418926416117</x>
         <y>103.62830870922659</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -233,10 +201,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>10</id>
       </interface_config>
@@ -249,10 +213,6 @@
         <x>186.64249484372377</x>
         <y>108.45178531069442</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -269,10 +229,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>12</id>
       </interface_config>
@@ -285,10 +241,6 @@
         <x>209.99871618740534</x>
         <y>110.09913019255086</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -305,10 +257,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>14</id>
       </interface_config>
@@ -321,10 +269,6 @@
         <x>217.07650565859714</x>
         <y>106.50791499753652</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -341,10 +285,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>16</id>
       </interface_config>
@@ -357,10 +297,6 @@
         <x>220.08226562513394</x>
         <y>99.97629811464418</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -377,10 +313,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>18</id>
       </interface_config>
@@ -393,10 +325,6 @@
         <x>217.18517141381355</x>
         <y>93.19867407268795</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -413,10 +341,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>20</id>
       </interface_config>
@@ -429,10 +353,6 @@
         <x>210.1093795404475</x>
         <y>89.95522681998229</y>
         <z>0.0</z>
-      </interface_config>
-      <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
       </interface_config>
       <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
@@ -449,10 +369,6 @@
         <z>0.0</z>
       </interface_config>
       <interface_config>
-        org.contikios.cooja.mspmote.interfaces.MspClock
-        <deviation>1.0</deviation>
-      </interface_config>
-      <interface_config>
         org.contikios.cooja.mspmote.interfaces.MspMoteID
         <id>22</id>
       </interface_config>
@@ -462,7 +378,7 @@
   <plugin>
     org.contikios.cooja.plugins.SimControl
     <width>279</width>
-    <z>1</z>
+    <z>0</z>
     <height>160</height>
     <location_x>788</location_x>
     <location_y>-1</location_y>
@@ -473,7 +389,6 @@
       <moterelations>true</moterelations>
       <skin>org.contikios.cooja.plugins.skins.IDVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.GridVisualizerSkin</skin>
-      <skin>org.contikios.cooja.plugins.skins.TrafficVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.UDGMVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.MoteTypeVisualizerSkin</skin>
       <skin>org.contikios.cooja.plugins.skins.LEDVisualizerSkin</skin>
@@ -481,7 +396,7 @@
       <viewport>17.524616786638813 0.0 0.0 17.524616786638813 -3118.0391847975425 -1511.9379715710363</viewport>
     </plugin_config>
     <width>786</width>
-    <z>4</z>
+    <z>2</z>
     <height>537</height>
     <location_x>1</location_x>
     <location_y>1</location_y>
@@ -494,7 +409,7 @@
       <coloring />
     </plugin_config>
     <width>1132</width>
-    <z>0</z>
+    <z>1</z>
     <height>378</height>
     <location_x>788</location_x>
     <location_y>160</location_y>
@@ -541,7 +456,7 @@
       <decorations>true</decorations>
     </plugin_config>
     <width>852</width>
-    <z>8</z>
+    <z>6</z>
     <height>160</height>
     <location_x>1068</location_x>
     <location_y>0</location_y>
@@ -556,36 +471,10 @@
       <analyzers name="6lowpan-pcap" />
     </plugin_config>
     <width>1620</width>
-    <z>3</z>
+    <z>5</z>
     <height>300</height>
     <location_x>4</location_x>
     <location_y>538</location_y>
-  </plugin>
-  <plugin>
-    org.contikios.cooja.serialsocket.SerialSocketServer
-    <mote_arg>0</mote_arg>
-    <plugin_config>
-      <port>60001</port>
-      <bound>true</bound>
-    </plugin_config>
-    <width>362</width>
-    <z>6</z>
-    <height>116</height>
-    <location_x>1086</location_x>
-    <location_y>31</location_y>
-  </plugin>
-  <plugin>
-    org.contikios.cooja.plugins.MoteInterfaceViewer
-    <mote_arg>20</mote_arg>
-    <plugin_config>
-      <interface>Leds</interface>
-      <scrollpos>0,0</scrollpos>
-    </plugin_config>
-    <width>292</width>
-    <z>5</z>
-    <height>137</height>
-    <location_x>1627</location_x>
-    <location_y>678</location_y>
   </plugin>
   <plugin>
     org.contikios.cooja.plugins.MoteInterfaceViewer
@@ -594,11 +483,20 @@
       <interface>Leds</interface>
       <scrollpos>0,0</scrollpos>
     </plugin_config>
+    <width>295</width>
+    <z>4</z>
+    <height>123</height>
+    <location_x>1624</location_x>
+    <location_y>539</location_y>
+  </plugin>
+  <plugin>
+    SerialSocketServer
+    <mote_arg>0</mote_arg>
     <width>293</width>
-    <z>2</z>
-    <height>135</height>
-    <location_x>1626</location_x>
-    <location_y>541</location_y>
+    <z>3</z>
+    <height>174</height>
+    <location_x>1627</location_x>
+    <location_y>664</location_y>
   </plugin>
 </simconf>
 
